@@ -1,0 +1,210 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > EmployeeServiceImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.TestingApp.TestingApp_week7.services.impl</a>
+</div>
+
+<h1>Coverage Summary for Class: EmployeeServiceImpl (com.example.TestingApp.TestingApp_week7.services.impl)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EmployeeServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (37/37)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.TestingApp.TestingApp_week7.services.impl;
+&nbsp;
+&nbsp;import com.example.TestingApp.TestingApp_week7.dto.EmployeeDTO;
+&nbsp;import com.example.TestingApp.TestingApp_week7.entities.Employee;
+&nbsp;import com.example.TestingApp.TestingApp_week7.exceptions.ResourceNotFoundException;
+&nbsp;import com.example.TestingApp.TestingApp_week7.repositories.EmployeeRepository;
+&nbsp;import com.example.TestingApp.TestingApp_week7.services.EmployeeService;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.modelmapper.ModelMapper;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;@Slf4j</b>
+&nbsp;@RequiredArgsConstructor
+&nbsp;public class EmployeeServiceImpl implements EmployeeService {
+&nbsp;
+&nbsp;    private final EmployeeRepository employeeRepository;
+&nbsp;    private final ModelMapper modelMapper;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public EmployeeDTO getEmployeeById(Long id) {
+<b class="fc">&nbsp;        log.info(&quot;Fetching employee with id: {}&quot;, id);</b>
+&nbsp;
+<b class="fc">&nbsp;        Employee employee = employeeRepository.findById(id)</b>
+<b class="fc">&nbsp;                .orElseThrow(() -&gt; {</b>
+<b class="fc">&nbsp;                    log.error(&quot;Employee not found with id: {}&quot;, id);</b>
+<b class="fc">&nbsp;                    return new ResourceNotFoundException(&quot;Employee not found with id: &quot; + id);</b>
+&nbsp;                });
+&nbsp;
+<b class="fc">&nbsp;        log.info(&quot;Employee found with email: {}&quot;, employee.getEmail());</b>
+<b class="fc">&nbsp;        return modelMapper.map(employee, EmployeeDTO.class);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public EmployeeDTO createNewEmployee(EmployeeDTO employeeDTO) {
+<b class="fc">&nbsp;        log.info(&quot;Creating new employee with email: {}&quot;, employeeDTO.getEmail());</b>
+<b class="fc">&nbsp;        List&lt;Employee&gt; existingEmployees = employeeRepository.findByEmail(employeeDTO.getEmail());</b>
+&nbsp;
+<b class="fc">&nbsp;        if (!existingEmployees.isEmpty()) {</b>
+<b class="fc">&nbsp;            log.error(&quot;Employee already exists with email: {}&quot;, employeeDTO.getEmail());</b>
+<b class="fc">&nbsp;            throw new RuntimeException(&quot;Employee already exists with email: &quot; + employeeDTO.getEmail());</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        Employee employee = modelMapper.map(employeeDTO, Employee.class);</b>
+&nbsp;
+&nbsp;
+<b class="fc">&nbsp;        Employee savedEmployee = employeeRepository.save(employee);</b>
+<b class="fc">&nbsp;        log.info(&quot;Employee created successfully with id: {}&quot;, savedEmployee.getId());</b>
+&nbsp;
+<b class="fc">&nbsp;        return modelMapper.map(savedEmployee, EmployeeDTO.class);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public EmployeeDTO updateEmployee(Long id, EmployeeDTO employeeDTO) {
+<b class="fc">&nbsp;        log.info(&quot;Updating employee with id: {}&quot;, id);</b>
+&nbsp;
+<b class="fc">&nbsp;        Employee existingEmployee = employeeRepository.findById(id)</b>
+<b class="fc">&nbsp;                .orElseThrow(() -&gt; {</b>
+<b class="fc">&nbsp;                    log.error(&quot;Employee not found with id: {}&quot;, id);</b>
+<b class="fc">&nbsp;                    return new ResourceNotFoundException(&quot;Employee not found with id: &quot; + id);</b>
+&nbsp;                });
+&nbsp;
+<b class="fc">&nbsp;        if (!existingEmployee.getEmail().equals(employeeDTO.getEmail())) {</b>
+<b class="fc">&nbsp;            log.error(&quot;Attempted to update  with email for employee with Id: {}&quot;, id);</b>
+<b class="fc">&nbsp;            throw new RuntimeException(&quot;The Email of the employee cannot be updated&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;
+<b class="fc">&nbsp;        modelMapper.map(employeeDTO, existingEmployee);</b>
+<b class="fc">&nbsp;       existingEmployee.setId(id);</b>
+&nbsp;
+<b class="fc">&nbsp;        Employee updatedEmployee = employeeRepository.save(existingEmployee);</b>
+<b class="fc">&nbsp;        log.info(&quot;Employee updated successfully with id: {}&quot;, id);</b>
+&nbsp;
+<b class="fc">&nbsp;        return modelMapper.map(updatedEmployee, EmployeeDTO.class);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void deleteEmployee(Long id) {
+<b class="fc">&nbsp;        log.info(&quot;Deleting employee with id: {}&quot;, id);</b>
+<b class="fc">&nbsp;         boolean exists = employeeRepository.existsById(id);</b>
+&nbsp;
+<b class="fc">&nbsp;         if(!exists) {</b>
+<b class="fc">&nbsp;             log.error(&quot;Employee not found with id: {}&quot;, id);</b>
+<b class="fc">&nbsp;             throw new ResourceNotFoundException(&quot;Employee not found with id: &quot; + id);</b>
+&nbsp;         }
+&nbsp;
+<b class="fc">&nbsp;        employeeRepository.deleteById(id);</b>
+<b class="fc">&nbsp;        log.info(&quot;Employee deleted successfully with id: {}&quot;, id);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-06-23 22:13</div>
+</div>
+</body>
+</html>
