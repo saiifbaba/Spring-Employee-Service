@@ -25,9 +25,9 @@ phases:
       # OPTION 2: If you want to skip tests, uncomment the line below and comment out Option 1 above:
       - mvn clean package -DskipTests
 
-  post_build:
-    commands:
-      - echo "Build and packaging completed."
+ # post_build:
+  #  commands:
+   #   - echo "Build and packaging completed."
 
 #reports:
   # Publishes JUnit Test results directly to AWS CodeBuild Test Reports dashboard
