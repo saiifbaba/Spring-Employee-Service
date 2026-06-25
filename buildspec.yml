@@ -1,0 +1,56 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto21
+    commands:
+      - echo "Installing/Verifying Java version..."
+      - java -version
+      # Ensure maven wrapper is executable if needed
+      - chmod +x ./mvnw || true
+
+  pre_build:
+    commands:
+      - echo "Pre-build phase started..."
+
+  build:
+    commands:
+      - echo "Building, Testing, and packaging the application..."
+      # OPTION 1: Run all tests & package. Generates JaCoCo coverage reports.
+      # Note: If your tests use Testcontainers (which require Docker), make sure 
+      # you enable "Privileged" mode in your AWS CodeBuild project settings.
+      #- mvn clean package
+      
+      # OPTION 2: If you want to skip tests, uncomment the line below and comment out Option 1 above:
+      - mvn clean package -DskipTests
+
+  post_build:
+    commands:
+      - echo "Build and packaging completed."
+
+#reports:
+  # Publishes JUnit Test results directly to AWS CodeBuild Test Reports dashboard
+ # surefire-reports:
+  #  files:
+   #   - '**/TEST-*.xml'
+    #base-directory: 'target/surefire-reports'
+    #file-format: 'JUNITXML'
+
+  # Publishes JaCoCo Code Coverage reports directly to AWS CodeBuild Coverage dashboard
+  #jacoco-coverage:
+   # files:
+      - 'jacoco.xml'
+    #base-directory: 'target/site/jacoco'
+    #file-format: 'JACOCOXML'
+
+artifacts:
+  files:
+    # Package only the compiled JAR file for deployment
+    - target/*.jar
+  discard-paths: yes
+
+cache:
+  paths:
+    # Cache Maven dependencies to make subsequent builds faster
+    - '/root/.m2/**/*'
