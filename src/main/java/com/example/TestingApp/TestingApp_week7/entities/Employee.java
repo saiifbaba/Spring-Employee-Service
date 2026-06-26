@@ -22,4 +22,7 @@ public class Employee {
 
     private Long salary;
 
+    @ManyToOne
+    private Department department;
+
 }
